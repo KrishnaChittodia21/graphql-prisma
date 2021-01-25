@@ -17,35 +17,54 @@ const prisma = new Prisma({
 //   console.log(err)
 // })
 
-// prisma.mutation.createPost({
-//   data: {
-//     title: 'test user is active',
-//     body: 'test user body',
-//     published: true,
-//     author: {
-//       connect: {
-//         id: "ckk9o9d9g00ef0912h0si59ls"
-//       }
-//     }
-//   }
-// }, '{ id title body published }').then((data) => {
-//   console.log(JSON.stringify(data, undefined, 2));
+const createPostForUser = async (authorId, data) => {
+  const checkUserExists = await prisma.exists.User({id: authorId});
+  if(!checkUserExists){
+    throw new Error('User Not found')
+  } 
+  const post = await prisma.mutation.createPost({
+    data: {
+      ...data,
+      author: {
+        connect: {
+          id: authorId,
+        }
+      }
+    }
+  }, '{ author { id name email post { id title published }} }')
+  return post.author;
+}
+
+// createPostForUser('ckkb68nq0000u09126as7qcpl', {
+//   title: 'Call of duty',
+//   body: 'i love this game',
+//   published: true
+// }).then((user) => {
+//   console.log(JSON.stringify(user, undefined, 2))
 // }).catch((err) => {
 //   console.log(err)
 // })
 
-prisma.mutation.updatePost({
-  where: {
-    id: "ckkacqs7e01i909126hzijvj4"
-  },
-  data: {
-    body: "body number 1",
-    published: true
-  },
-}, '{ id }').then((data) => {
-  return prisma.query.posts(null, '{ id title body published }').then((postData) => {
-    console.log(JSON.stringify(postData, undefined, 2));
+const updatePostForUser = async (postId, data) => {
+  const postExists = await prisma.exists.Post({
+    id: postId
   })
+  if(!postExists){
+    throw new Error('post does not exists')
+  }
+  const post = await prisma.mutation.updatePost({
+    data,
+    where: {
+      id: postId
+    }
+  }, '{author { id name email post { id title published }}}')
+  return post.author;
+}
+
+updatePostForUser('ckkb7kaau001t0912m620zy6n', {
+  body: 'i love warzone'
+}).then((user) => {
+  console.log(JSON.stringify(user, undefined, 2))
 }).catch((err) => {
   console.log(err)
 })
