@@ -1,40 +1,33 @@
 const Query = {
-  users(parent, args, { db }, info) {
-    if(!args.query) {
-      return db.users;
+  users(parent, args, { prisma }, info) {
+    const opArgs = {};
+    if(args.query) {
+      opArgs.where = {
+        OR: [{
+          name_contains: args.query,
+        }, {
+          email_contains: args.query
+        }]
+      }
     }
-    return db.users.filter((user) => {
-      return user.name.toLowerCase().includes(args.query.toLowerCase());
-    })
+
+    return prisma.query.users(opArgs, info)
   },
-  posts(parent, args, { db }, info) {
-    if(!args.query) {
-      return db.posts;
+  posts(parent, args, { prisma }, info) {
+    const opArgs = {};
+    if(args.query) {
+      opArgs.where = {
+        OR: [{
+          title_contains: args.query,
+        }, {
+          body_contains: args.query
+        }]
+      }
     }
-    return db.posts.filter((post) => {
-      const isTitleMatch = post.title.toLowerCase().includes(args.query.toLowerCase());
-      const isBodyMatch = post.body.toLowerCase().includes(args.query.toLowerCase());
-      return isBodyMatch || isTitleMatch;
-    })
+    return prisma.query.posts(opArgs, info);
   },
-  me() {
-    return {
-      id: '1234',
-      name: 'kannu21',
-      email: 'kannu21@kannu21.com',
-      age: 28
-    }
-  },
-  post() {
-    return {
-      id: '1',
-      title: 'first post',
-      body: 'test body',
-      published: false
-    }
-  },
-  comments(parents, args, { db }, info) {
-    return db.comments;
+  comments(parents, args, { prisma }, info) {
+    return prisma.query.comments(null, info)
   }
 }
 
