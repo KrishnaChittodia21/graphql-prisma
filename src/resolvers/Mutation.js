@@ -1,7 +1,8 @@
-import { v4 as uuidv4 } from 'uuid';
-
 const Mutation = {
   async createUser(parent, args, { prisma }, info) {
+    if(args.data.password.length <  8) {
+      throw new Error('password must le atleast 8 character long')
+    }
     const emailTaken = await prisma.exists.User({ email: args.data.email})
     if(emailTaken){
       throw new Error('Email already exists');
