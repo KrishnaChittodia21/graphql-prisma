@@ -5,16 +5,24 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon src/index.js --ext js,graphql --exec babel-node",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --watch",
     "get-schema": "graphql get-schema -p prisma"
+  },
+  "jest": {
+    "globalSetup": "./test/jest/globalSetup.js",
+    "globalTeardown": "./test/jest/globalTeardown.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "apollo-boost": "^0.1.14",
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0",
     "bcryptjs": "^2.4.3",
+    "cross-fetch": "^2.2.2",
+    "graphql": "^14.0.2",
     "graphql-cli": "^2.16.4",
     "graphql-yoga": "^1.18.3",
     "jsonwebtoken": "^8.3.0",
@@ -24,5 +32,8 @@
   "resolutions": {
     "d2/left-pad": "1.1.1",
     "c/**/left-pad": "^1.1.2"
+  },
+  "devDependencies": {
+    "jest": "^23.5.0"
   }
 }
