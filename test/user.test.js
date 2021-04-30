@@ -67,3 +67,37 @@ test('should create a new user', async () => {
   const exists = await prisma.exists.User({ id: response.data.createUser.user.id });
   expect(exists).toBe(true);
 }, 10000)
+
+test('should expose public author profiles', async () => {
+  const getUsers = gql`
+    query {
+      users {
+        id
+        name
+        email
+      }
+    }
+  `;
+  const response = await client.query({ query: getUsers});
+  expect(response.data.users.length).toBe(1);
+  expect(response.data.users[0].email).toBeNull();
+  expect(response.data.users[0].name).toBe('krishna')
+})
+
+test('should expose published post', async () => {
+  const getPosts = gql`
+    query {
+      posts {
+        id
+        title
+        body
+        published
+      }
+    }
+  `;
+
+  const response = await client.query({ query: getPosts});
+  expect(response.data.posts.length).toBe(1);
+  expect(response.data.posts[0].published).toBe(true);
+})
+
