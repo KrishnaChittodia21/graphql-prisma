@@ -1,16 +1,30 @@
 import bcrypt from 'bcryptjs';
 import prisma from '../../src/prisma';
 
+const userOne = {
+  input: {
+    name: 'krishna',
+    email: 'krishna@krishna.com',
+    password: bcrypt.hashSync('k1234!@#$')
+  },
+  user: undefined
+}
+
+const postOne = {
+  input: {
+    title: 'My post 101',
+    body: '',
+    published: true
+  },
+  post: undefined
+}
+
 const seedDatabase = async () => {
   jest.setTimeout(5000);
   await prisma.mutation.deleteManyPosts();
   await prisma.mutation.deleteManyUsers();
-  const user = await prisma.mutation.createUser({
-    data: {
-      name: 'krishna',
-      email: 'krishna@krishna.com',
-      password: bcrypt.hashSync('k1234!@#$')
-    }
+  userOne.user = await prisma.mutation.createUser({
+    data: userOne.input
   })
   await prisma.mutation.createPost({
     data: {
@@ -19,23 +33,21 @@ const seedDatabase = async () => {
       published: true,
       author: {
         connect: {
-          id: user.id,
+          id: userOne.user.id,
         }
       }
     }
   })
-  await prisma.mutation.createPost({
+  postOne.post = await prisma.mutation.createPost({
     data: {
-      title: 'My draft post',
-      body: '',
-      published: false,
+      ...postOne.input,
       author: {
         connect: {
-          id: user.id,
+          id: userOne.user.id,
         }
       }
     }
   })
 };
 
-export default seedDatabase;
+export { seedDatabase as default, postOne, userOne };
