@@ -1,4 +1,5 @@
-import ApolloBoost from "apollo-boost";
+import ApolloBoost, { gql } from "apollo-boost";
+
 
 const getClient = () => {
   return new ApolloBoost({
